@@ -1,9 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
+using OpenTelemetry;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Logging.Types;
 
 namespace Logging
 {
@@ -18,8 +21,6 @@ namespace Logging
 
         public async Task StartProcess()
         {
-            Person person = new Person() { PersonId = 100, Name = "XYZ" };
-
             _logger.LogDebug("Staring Process at {date}",DateTime.UtcNow);
 
             using (_logger.BeginScope(new Dictionary<string, object>() { { "JobCode", "JC123" } }))
@@ -29,10 +30,10 @@ namespace Logging
                 _logger.LogInformation("Job Finished");
             }
 
-            _logger.LogInformation("Stoping Process for {person}", person);
+            Person person = new Person() { PersonId = 100, Name = "XYZ" };
+            _logger.LogInformation("Stoping Process for {@person}", person);
 
-            
-            _logger.LogHelloWorld(person);
+            _logger.LogHelloWorld(new Person2(100, "XYZ"));
         }
     }
 }

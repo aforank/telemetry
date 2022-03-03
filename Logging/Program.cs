@@ -18,6 +18,7 @@ builder.ConfigureLogging(c =>
     var config = c.Services.BuildServiceProvider().GetRequiredService<IConfiguration>();
     c.AddConfiguration(config)
         .AddJsonConsole(j => { j.JsonWriterOptions = new System.Text.Json.JsonWriterOptions() { Indented = true }; });
+        //.AddSeq();
 });
             
 
