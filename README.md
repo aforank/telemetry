@@ -10,7 +10,7 @@
 ## Local Apps/Resources
 - MongoDB on local
 - SQL on local
-- Jaeger
+- Jaeger (Optional) For traces
 - Prometheus (Optional) - For metrics
 - Seq (Optional) - For logs
 
@@ -24,7 +24,7 @@
 - Create a new database "CustomerDB" on your local MS Server.
 - Table and Records will be auto seeded when you run the application.
 
-### Install Jaeger
+### Install Jaeger (Optional)
 - Download Jaeger from https://github.com/jaegertracing/jaeger/releases/download/v1.31.0/jaeger-1.31.0-windows-amd64.tar.gz
 - Unzip and open command prompt
 - Run `jaeger-all-in-one --collector.zipkin.host-port=:9411`
@@ -48,12 +48,12 @@
 - Storage Account
 
 ### Application Insights
-- Create a new Application Insights resource on your Azure subscription and keep the Instumentation key and Endpoint with you.
-- Update Instumentation key and Endpoint in all the appsettings.json files (7 projects)
+- Create a new Application Insights resource on your Azure subscription and keep the Instumentation key and Connection String with you.
+- Update Instumentation key and Connection String in all the appsettings.json files (6 projects)
 
 ### Service Bus
 - Create a new Service Bus resource and keep the connection string with you.
-- Update connection string in Booking API, Payment Processor and Notifcation Processor appsettings.json files
+- Update connection string in Booking API, Payment API and Notifcation API appsettings.json files
 - Create two queues with default settings
   - notifications
   - payments
@@ -63,9 +63,10 @@
 - Update connection string in Drivers API project (app settings.json file)
 
 ### Azure Storage
-- Create a storage account
+- Create a storage account and keep the connection string with you.
 - Create a container "templates"
 - Create a dummy file by the name of "Email.txt"
+- Update connection string in Notifcation API project (app settings.json file)
 
 ## Run the application
 - Download/Clone source code from this repository
