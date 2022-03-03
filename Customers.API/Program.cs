@@ -18,7 +18,7 @@ builder.Services.AddDbContext<CustomerDBContext>(options =>
 
 builder.Logging.ClearProviders().AddOpenTelemetry(c => c.AddConsoleExporter().IncludeScopes = true)
                .AddSeq()
-               .AddApplicationInsights("aac2cf64-8c25-4a6f-a2ea-4031c3ef19db")
+               .AddApplicationInsights(builder.Configuration.GetValue<string>("AppInsightsInstrumentationKey"))
                .Configure(o => o.ActivityTrackingOptions = ActivityTrackingOptions.SpanId
                                               | ActivityTrackingOptions.TraceId
                                               | ActivityTrackingOptions.ParentId
@@ -44,7 +44,7 @@ builder.Services.AddOpenTelemetryTracing((Action<TracerProviderBuilder>)(c =>
         })
     .AddJaegerExporter()
     .AddConsoleExporter()
-    .AddAzureMonitorTraceExporter(c => c.ConnectionString = "InstrumentationKey=aac2cf64-8c25-4a6f-a2ea-4031c3ef19db;IngestionEndpoint=https://southindia-0.in.applicationinsights.azure.com/")
+    .AddAzureMonitorTraceExporter(c => c.ConnectionString = builder.Configuration.GetValue<string>("ApplicationInsightsConnectionString"))
     .AddSource("Azure.*")
     .SetSampler(new AlwaysOnSampler())
     .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("Customer.API"));

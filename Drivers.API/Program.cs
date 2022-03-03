@@ -16,12 +16,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 var redisConfig = builder.Configuration.GetSection("Redis").Get<RedisConfiguration>();
-var connection = ConnectionMultiplexer.Connect("wg-cache.redis.cache.windows.net:6380,password=a7ogVZ0VK7dtdZqbEfGEekGGxdanE3e2UAzCaIwkF5Q=,ssl=True,abortConnect=False");
+var connection = ConnectionMultiplexer.Connect(builder.Configuration.GetValue<string>("AzureRedisConnectionString"));
 builder.Services.AddSingleton(connection);
 
 builder.Logging.ClearProviders().AddOpenTelemetry(c => c.AddConsoleExporter().IncludeScopes = true)
                .AddSeq()
-               .AddApplicationInsights("aac2cf64-8c25-4a6f-a2ea-4031c3ef19db")
+               .AddApplicationInsights(builder.Configuration.GetValue<string>("AppInsightsInstrumentationKey"))
                .Configure(o => o.ActivityTrackingOptions = ActivityTrackingOptions.SpanId
                                               | ActivityTrackingOptions.TraceId
                                               | ActivityTrackingOptions.ParentId
@@ -44,7 +44,7 @@ builder.Services.AddOpenTelemetryTracing((Action<TracerProviderBuilder>)(c =>
     .AddRedisInstrumentation(connection, c => c.SetVerboseDatabaseStatements = true)
     .AddJaegerExporter()
     .AddConsoleExporter()
-    .AddAzureMonitorTraceExporter(c => c.ConnectionString = "InstrumentationKey=aac2cf64-8c25-4a6f-a2ea-4031c3ef19db;IngestionEndpoint=https://southindia-0.in.applicationinsights.azure.com/")
+    .AddAzureMonitorTraceExporter(c => c.ConnectionString = builder.Configuration.GetValue<string>("ApplicationInsightsConnectionString"))
     .AddSource("Azure.*")
     .SetSampler(new AlwaysOnSampler())
     .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("Drivers.API"));

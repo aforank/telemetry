@@ -19,9 +19,9 @@ AppContext.SetSwitch("Azure.Experimental.EnableActivitySource", true);
 builder.Services.AddControllers();
 
 builder.Services.AddHttpClient();
-builder.Services.AddAzureClients(builder =>
+builder.Services.AddAzureClients(builder2 =>
 {
-    builder.AddServiceBusClient("Endpoint=sb://wg-sb123.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=uyGx6ag6dMnRAOSZLq68PvgbBtqKOZBO23TdiPIhQg8=");
+    builder2.AddServiceBusClient(builder.Configuration.GetValue<string>("ServiceBusConnectringString"));
 });
 
 var clientSettings = MongoClientSettings.FromUrl(new MongoUrl("mongodb://localhost:27017"));
@@ -32,7 +32,7 @@ builder.Services.AddSingleton(new MongoClient(clientSettings));
 
 builder.Logging.ClearProviders().AddOpenTelemetry(c => c.AddConsoleExporter().IncludeScopes = true)
                .AddSeq()
-               .AddApplicationInsights("aac2cf64-8c25-4a6f-a2ea-4031c3ef19db")
+               .AddApplicationInsights(builder.Configuration.GetValue<string>("AppInsightsInstrumentationKey"))
                .Configure(o => o.ActivityTrackingOptions = ActivityTrackingOptions.SpanId
                                               | ActivityTrackingOptions.TraceId
                                               | ActivityTrackingOptions.ParentId
@@ -55,7 +55,7 @@ builder.Services.AddOpenTelemetryTracing((Action<TracerProviderBuilder>)(c =>
     .AddMongoDBInstrumentation()
     .AddConsoleExporter()
     .AddJaegerExporter()
-    .AddAzureMonitorTraceExporter(c => c.ConnectionString = "InstrumentationKey=aac2cf64-8c25-4a6f-a2ea-4031c3ef19db;IngestionEndpoint=https://southindia-0.in.applicationinsights.azure.com/")
+    .AddAzureMonitorTraceExporter(c => c.ConnectionString = builder.Configuration.GetValue<string>("ApplicationInsightsConnectionString"))
     .AddSource("Azure.*")
     .AddSource("EstimateRide.Component")
     .SetSampler(new AlwaysOnSampler())

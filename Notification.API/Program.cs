@@ -14,15 +14,15 @@ AppContext.SetSwitch("Azure.Experimental.EnableActivitySource", true);
 
 builder.Services.AddControllers();
 builder.Services.AddHttpClient();
-builder.Services.AddAzureClients(builder =>
+builder.Services.AddAzureClients(builder2 =>
 {
-    builder.AddServiceBusClient("Endpoint=sb://wg-sb123.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=uyGx6ag6dMnRAOSZLq68PvgbBtqKOZBO23TdiPIhQg8=");
-    builder.AddBlobServiceClient("DefaultEndpointsProtocol=https;AccountName=workgroupdiag344;AccountKey=fD+VAvyAj0jtjqMCRQadAJxqtNkvmIG4pq0V6MocRPyo2t3FQevay30E9HpsQh38jX3Ja5DeSLF4FK3qBQyB/g==;EndpointSuffix=core.windows.net");
+    builder2.AddServiceBusClient(builder.Configuration.GetValue<string>("ServiceBusConnectringString"));
+    builder2.AddBlobServiceClient(builder.Configuration.GetValue<string>("AzureStorageConnectionString"));
 });
 
 builder.Logging.ClearProviders().AddOpenTelemetry(c => c.AddConsoleExporter().IncludeScopes = true)
                .AddSeq()
-               .AddApplicationInsights("aac2cf64-8c25-4a6f-a2ea-4031c3ef19db")
+               .AddApplicationInsights(builder.Configuration.GetValue<string>("AppInsightsInstrumentationKey"))
                .Configure(o => o.ActivityTrackingOptions = ActivityTrackingOptions.SpanId
                                               | ActivityTrackingOptions.TraceId
                                               | ActivityTrackingOptions.ParentId
@@ -44,7 +44,7 @@ builder.Services.AddOpenTelemetryTracing((Action<TracerProviderBuilder>)(c =>
     })
     .AddJaegerExporter()
     .AddConsoleExporter()
-    .AddAzureMonitorTraceExporter(c => c.ConnectionString = "InstrumentationKey=aac2cf64-8c25-4a6f-a2ea-4031c3ef19db;IngestionEndpoint=https://southindia-0.in.applicationinsights.azure.com/")
+    .AddAzureMonitorTraceExporter(c => c.ConnectionString = builder.Configuration.GetValue<string>("ApplicationInsightsConnectionString"))
     .AddSource("Azure.*")
     .SetSampler(new AlwaysOnSampler())
     .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("Notification.Processor"));
